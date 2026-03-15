@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import AVFAudio
 
 struct ContentView: View {
     
     @State private var message: String = ""
     @State private var shownImage: Image = Image(systemName: "")
+    
+    @State private var audioPlayer: AVAudioPlayer!
     
     var body: some View {
         VStack {
@@ -36,16 +39,19 @@ struct ContentView: View {
                 Button("Peace") {
                     message = "Peace"
                     shownImage = Image(systemName: "peacesign")
+                    playSound(soundName: "sound0")
                 }
                 
                 Button("Love") {
                     message = "Love"
                     shownImage = Image(systemName: "heart")
+                    playSound(soundName: "sound1")
                 }
                 
                 Button("Understanding") {
                     message = "Understanding"
                     shownImage = Image(systemName: "lightbulb")
+                    playSound(soundName: "sound2")
                 }
             }
             .buttonStyle(.glassProminent)
@@ -54,6 +60,20 @@ struct ContentView: View {
             
         }
         .padding()
+    }
+    
+    
+    func playSound(soundName: String) {
+        guard let soundFile = NSDataAsset(name: soundName) else {
+            return
+        }
+        
+        do {
+            audioPlayer = try AVAudioPlayer(data: soundFile.data)
+            audioPlayer.play()
+        } catch {
+            print("🤬 ERROR: Could not play sound. \(error.localizedDescription)")
+        }
     }
 }
 
