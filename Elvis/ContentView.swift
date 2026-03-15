@@ -12,6 +12,7 @@ struct ContentView: View {
     
     @State private var message: String = ""
     @State private var shownImage: Image = Image(systemName: "")
+    @State private var soundIsOn: Bool = true
     
     @State private var audioPlayer: AVAudioPlayer!
     
@@ -19,13 +20,13 @@ struct ContentView: View {
         VStack {
             Text("What's So Funny 'But")
                 .font(.largeTitle)
-                .foregroundStyle(Color(.purple))
-                .bold(true)
+                .foregroundStyle(.purple)
+                .bold()
             
             Spacer()
             
             shownImage
-                .font(Font.system(size: 300))
+                .font(.system(size: 300))
                 
             
             Text(message)
@@ -36,22 +37,38 @@ struct ContentView: View {
             Spacer()
             
             HStack {
+                Text("Sound On:")
+                Toggle("Sound On", isOn: $soundIsOn)
+                    .labelsHidden()
+            }
+            
+            Spacer()
+            
+            HStack {
                 Button("Peace") {
                     message = "Peace"
                     shownImage = Image(systemName: "peacesign")
-                    playSound(soundName: "sound0")
+                    if soundIsOn {
+                        playSound(soundName: "sound0")
+                    }
+                    
                 }
                 
                 Button("Love") {
                     message = "Love"
                     shownImage = Image(systemName: "heart")
-                    playSound(soundName: "sound1")
+                    if soundIsOn {
+                        playSound(soundName: "sound1")
+                    }
+                    
                 }
                 
                 Button("Understanding") {
                     message = "Understanding"
                     shownImage = Image(systemName: "lightbulb")
-                    playSound(soundName: "sound2")
+                    if soundIsOn {
+                        playSound(soundName: "sound2")
+                    }
                 }
             }
             .buttonStyle(.glassProminent)
@@ -62,6 +79,7 @@ struct ContentView: View {
         .padding()
     }
     
+    //Helper Functions
     
     func playSound(soundName: String) {
         guard let soundFile = NSDataAsset(name: soundName) else {
