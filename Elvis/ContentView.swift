@@ -11,10 +11,10 @@ import AVFAudio
 struct ContentView: View {
     
     @State private var message: String = ""
-    @State private var shownImage: Image = Image(systemName: "")
+    @State private var shownImage: Image? = nil
     @State private var soundIsOn: Bool = true
     
-    @State private var audioPlayer: AVAudioPlayer!
+    @State private var audioPlayer: AVAudioPlayer?
     
     var body: some View {
         VStack {
@@ -25,14 +25,21 @@ struct ContentView: View {
             
             Spacer()
             
-            shownImage
-                .font(.system(size: 300))
+            if let shownImage {
+                shownImage
+                    .font(.system(size: 300))
+                    .frame(width: 300, height: 300)
+            } else {
+                Color.clear
+                    .frame(width: 300, height: 300)
+            }
+               
                 
             
             Text(message)
                 .font(.largeTitle)
-                .foregroundStyle(Color(.purple))
-                .bold(true)
+                .foregroundStyle(.purple)
+                .bold()
             
             Spacer()
             
@@ -40,6 +47,13 @@ struct ContentView: View {
                 Text("Sound On:")
                 Toggle("Sound On", isOn: $soundIsOn)
                     .labelsHidden()
+                    .onChange(of: soundIsOn) { oldValue, newValue in
+                        if !newValue {
+                            if audioPlayer?.isPlaying == true {
+                                audioPlayer?.stop()
+                            }
+                        }
+                    }
             }
             
             Spacer()
@@ -72,11 +86,12 @@ struct ContentView: View {
                 }
             }
             .buttonStyle(.glassProminent)
-            .tint(Color(.purple))
+            .tint(.purple)
             
             
         }
         .padding()
+        .onAppear { shownImage = nil }
     }
     
     //Helper Functions
@@ -86,9 +101,14 @@ struct ContentView: View {
             return
         }
         
+        //Safeguard: stop any sound currently playing
+        if audioPlayer?.isPlaying == true {
+            audioPlayer?.stop()
+        }
+        
         do {
             audioPlayer = try AVAudioPlayer(data: soundFile.data)
-            audioPlayer.play()
+            audioPlayer?.play()
         } catch {
             print("🤬 ERROR: Could not play sound. \(error.localizedDescription)")
         }
@@ -98,3 +118,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
